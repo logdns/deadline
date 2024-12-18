@@ -831,6 +831,7 @@ textarea {
         opacity: 0;
         transform: translateY(-20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -838,9 +839,12 @@ textarea {
 }
 
 @keyframes bounce {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0);
     }
+
     50% {
         transform: translateY(-10px);
     }
@@ -851,7 +855,7 @@ textarea {
     .password-overlay {
         background: rgba(255, 255, 255, 0.95);
     }
-    
+
     .password-container {
         background: white;
     }
