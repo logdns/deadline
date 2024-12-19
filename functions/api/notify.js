@@ -132,6 +132,76 @@ export async function onRequest(context) {
             }
         }
 
+        // 发送到飞书
+        if (env.FEISHU_KEY) {
+            try {
+                const displayTime = new Date(new Date(reminder.remind_time).getTime());
+                const cycleText = {
+                    'once': '单次提醒',
+                    'weekly': '每周循环',
+                    'monthly': '每月循环',
+                    'yearly': '每年循环'
+                }[reminder.cycle_type] || '单次提醒';
+                const feishuMessage = {
+                    msg_type: 'text',
+                    content: {
+                        text: `🔔 提醒：${reminder.title}\n\n${reminder.content}\n\n⏰ 提醒时间：${displayTime.toLocaleString('zh-CN')}\n\n📅 循环类型：${cycleText}`
+                    }
+                };
+                console.log('Sending Feishu message:', JSON.stringify(feishuMessage));
+                console.log('Feishu webhook URL:', env.FEISHU_KEY);
+                const feishuResponse = await fetch(env.FEISHU_KEY, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(feishuMessage)
+                });
+                const feishuResult = await feishuResponse.json();
+                console.log('Feishu response:', feishuResult);
+                notificationResults.push({ platform: 'feishu', success: feishuResponse.ok, result: feishuResult });
+                if (!feishuResponse.ok) {
+                    console.error('Feishu API error:', feishuResult);
+                }
+            } catch (error) {
+                console.error('Error sending Feishu message:', error);
+                notificationResults.push({ platform: 'feishu', success: false, error: error.message });
+            }
+        }
+
+        // 发送到钉钉
+        if (env.DINGTALK_KEY) {
+            try {
+                const displayTime = new Date(new Date(reminder.remind_time).getTime());
+                const cycleText = {
+                    'once': '单次提醒',
+                    'weekly': '每周循环',
+                    'monthly': '每月循环',
+                    'yearly': '每年循环'
+                }[reminder.cycle_type] || '单次提醒';
+                const dingMessage = {
+                    msgtype: 'text',
+                    text: {
+                        content: `🔔 提醒：${reminder.title}\n\n${reminder.content}\n\n⏰ 提醒时间：${displayTime.toLocaleString('zh-CN')}\n\n📅 循环类型：${cycleText}`
+                    }
+                };
+                console.log('Sending DingTalk message:', JSON.stringify(dingMessage));
+                console.log('DingTalk webhook URL:', env.DINGTALK_KEY);
+                const dingResponse = await fetch(env.DINGTALK_KEY, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dingMessage)
+                });
+                const dingResult = await dingResponse.json();
+                console.log('DingTalk response:', dingResult);
+                notificationResults.push({ platform: 'dingtalk', success: dingResponse.ok, result: dingResult });
+                if (!dingResponse.ok) {
+                    console.error('DingTalk API error:', dingResult);
+                }
+            } catch (error) {
+                console.error('Error sending DingTalk message:', error);
+                notificationResults.push({ platform: 'dingtalk', success: false, error: error.message });
+            }
+        }
+
         // 更新提醒状态为已发送
         await env.DB.prepare(
             'UPDATE reminders SET status = 1 WHERE id = ?'

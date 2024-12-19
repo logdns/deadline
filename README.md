@@ -1,4 +1,4 @@
-# MJ 提醒系统
+# MJJ 提醒系统
 
 一个基于 Cloudflare Pages 的在线提醒系统，支持多种提醒方式和循环类型，可以通过 Telegram 和企业微信接收提醒通知。
 
@@ -42,11 +42,23 @@ CREATE TABLE reminders (
 
 在 Cloudflare Workers 的环境变量中设置以下值：
 
-- `CRON_SECRET`: 定时任务的访问密钥
-- `CRONJOB_API_KEY`: cron-job.org 的 API 密钥
-- `TG_BOT_TOKEN`: Telegram Bot Token（可选）
-- `TG_CHAT_ID`: Telegram Chat ID（可选）
-- `WECOM_KEY`: 企业微信 Webhook 地址（可选）
+- `CRON_SECRET`: 定时任务的访问密钥（按照个人喜好设置）
+
+- `CRONJOB_API_KEY`: cron-job.org 的 API KEY
+
+- `TG_BOT_TOKEN`: Telegram Bot Token（推送到tg机器人）（这个应该都会吧）（必须至少设置一个通知，否则网站无法访问）
+
+- `TG_CHAT_ID`: Telegram Chat ID
+
+- `WECOM_KEY`: 企业微信 Webhook 地址（完整的url，推送到微信企业机器人，可选）（这个也可以网上找教程）
+
+- `BARK_KEY`:  bark提醒（可选）
+
+- `FEISHU_KEY`: 飞书提醒（可选）
+
+- `DINGTALK_KEY`: 钉钉提醒（可选）
+
+- `其他通知渠道`可以在[deadline/functions/api/notify.js at main · 1143520/deadline](https://github.com/1143520/deadline/blob/main/functions/api/notify.js)自行设置 类似 if (env.BARK_KEY) {} 结构清晰
 
 ## 部署步骤
 
