@@ -18,6 +18,9 @@
 - Cloudflare D1 数据库
 - （可选）Telegram Bot Token 和 Chat ID
 - （可选）企业微信 Webhook 地址
+- （可选）bark 通知
+- （可选）飞书通知
+- （可选）钉钉通知
 
 ## 数据库设置
 
