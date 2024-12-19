@@ -33,7 +33,8 @@ CREATE TABLE reminders (
     cycle_type TEXT NOT NULL,
     status INTEGER DEFAULT 0,
     link TEXT,
-    cron_job_id INTEGER
+    cron_job_id INTEGER,
+    created_at TEXT
 );
 ```
 
