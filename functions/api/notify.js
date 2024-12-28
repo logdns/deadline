@@ -44,7 +44,8 @@ export async function onRequest(context) {
                     'monthly': '每月循环',
                     'yearly': '每年循环'
                 }[reminder.cycle_type] || '单次提醒';
-                const tgMessage = `🔔 提醒：${reminder.title}\n\n${reminder.content}\n\n⏰ 提醒时间：${displayTime.toLocaleString('zh-CN')}\n\n📅 循环类型：${cycleText}`;
+                const linkText = reminder.link ? `\n\n🔗 链接：${reminder.link}` : '';
+                const tgMessage = `🔔 提醒：${reminder.title}\n\n${reminder.content}\n\n⏰ 提醒时间：${displayTime.toLocaleString('zh-CN')}\n\n📅 循环类型：${cycleText}${linkText}`;
                 const tgResponse = await fetch(`https://api.telegram.org/bot${env.TG_BOT_TOKEN}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -76,10 +77,11 @@ export async function onRequest(context) {
                     'monthly': '每月循环',
                     'yearly': '每年循环'
                 }[reminder.cycle_type] || '单次提醒';
+                const linkText = reminder.link ? `\n\n🔗 链接：${reminder.link}` : '';
                 const wecomMessage = {
                     msgtype: 'text',
                     text: {
-                        content: `🔔 提醒：${reminder.title}\n\n${reminder.content}\n\n⏰ 提醒时间：${displayTime.toLocaleString('zh-CN')}\n\n📅 循环类型：${cycleText}`
+                        content: `🔔 提醒：${reminder.title}\n\n${reminder.content}\n\n⏰ 提醒时间：${displayTime.toLocaleString('zh-CN')}\n\n📅 循环类型：${cycleText}${linkText}`
                     }
                 };
 
@@ -115,9 +117,10 @@ export async function onRequest(context) {
                     'monthly': '每月循环',
                     'yearly': '每年循环'
                 }[reminder.cycle_type] || '单次提醒';
+                const linkText = reminder.link ? `\n\n🔗 链接：${reminder.link}` : '';
                 const barkMessage = {
                     title: `🔔 提醒：${reminder.title}`,
-                    body: `${reminder.content}\n\n⏰ 提醒时间：${displayTime.toLocaleString('zh-CN')}\n\n📅 循环类型：${cycleText}`,
+                    body: `${reminder.content}\n\n⏰ 提醒时间：${displayTime.toLocaleString('zh-CN')}\n\n📅 循环类型：${cycleText}${linkText}`,
                 };
                 const barkURL = `https://api.day.app/${env.BARK_KEY}/${encodeURIComponent(barkMessage.title)}/${encodeURIComponent(barkMessage.body)}`;
                 const barkResponse = await fetch(barkURL);
@@ -142,10 +145,11 @@ export async function onRequest(context) {
                     'monthly': '每月循环',
                     'yearly': '每年循环'
                 }[reminder.cycle_type] || '单次提醒';
+                const linkText = reminder.link ? `\n\n🔗 链接：${reminder.link}` : '';
                 const feishuMessage = {
                     msg_type: 'text',
                     content: {
-                        text: `🔔 提醒：${reminder.title}\n\n${reminder.content}\n\n⏰ 提醒时间：${displayTime.toLocaleString('zh-CN')}\n\n📅 循环类型：${cycleText}`
+                        text: `🔔 提醒：${reminder.title}\n\n${reminder.content}\n\n⏰ 提醒时间：${displayTime.toLocaleString('zh-CN')}\n\n📅 循环类型：${cycleText}${linkText}`
                     }
                 };
                 console.log('Sending Feishu message:', JSON.stringify(feishuMessage));
@@ -177,10 +181,11 @@ export async function onRequest(context) {
                     'monthly': '每月循环',
                     'yearly': '每年循环'
                 }[reminder.cycle_type] || '单次提醒';
+                const linkText = reminder.link ? `\n\n🔗 链接：${reminder.link}` : '';
                 const dingMessage = {
                     msgtype: 'text',
                     text: {
-                        content: `🔔 提醒：${reminder.title}\n\n${reminder.content}\n\n⏰ 提醒时间：${displayTime.toLocaleString('zh-CN')}\n\n📅 循环类型：${cycleText}`
+                        content: `🔔 提醒：${reminder.title}\n\n${reminder.content}\n\n⏰ 提醒时间：${displayTime.toLocaleString('zh-CN')}\n\n📅 循环类型：${cycleText}${linkText}`
                     }
                 };
                 console.log('Sending DingTalk message:', JSON.stringify(dingMessage));
