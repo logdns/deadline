@@ -378,7 +378,20 @@
                     const now = new Date();
 
                     if (reminder.cycle_type !== 'once') {
-                        nextRemindTime = currentTime;
+                        // 如果当前时间已经过了提醒时间，需要计算下一个周期
+                        if (now > currentTime) {
+                            const timeDiff = now.getTime() - currentTime.getTime();
+                            const cycleMilliseconds = {
+                                'weekly': 7 * 24 * 60 * 60 * 1000,
+                                'monthly': 30 * 24 * 60 * 60 * 1000,
+                                'yearly': 365 * 24 * 60 * 60 * 1000
+                            }[reminder.cycle_type];
+                            
+                            const cycles = Math.ceil(timeDiff / cycleMilliseconds);
+                            nextRemindTime = new Date(currentTime.getTime() + cycles * cycleMilliseconds);
+                        } else {
+                            nextRemindTime = currentTime;
+                        }
                     }
 
                     const reminderElement = document.createElement('div');
