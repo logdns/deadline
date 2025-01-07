@@ -207,7 +207,12 @@ export async function onRequest(context) {
             }
         }
 
-        // 如果不是单次提醒，计算并更新下一次提醒时间
+        // 更新提醒状态为已发送
+        await env.DB.prepare(
+            'UPDATE reminders SET status = 1 WHERE id = ?'
+        ).bind(reminderId).run();
+
+        // 如果不是单次提醒，重置状态为0并更新下一次提醒时间
         if (reminder.cycle_type !== 'once') {
             const currentTime = new Date(reminder.remind_time);
             let nextRemindTime;
@@ -236,22 +241,10 @@ export async function onRequest(context) {
                 }
             }
 
-            // 先更新下一次提醒时间
+            // 更新数据库中的下一次提醒时间和状态
             await env.DB.prepare(
-                'UPDATE reminders SET remind_time = ? WHERE id = ?'
+                'UPDATE reminders SET status = 0, remind_time = ? WHERE id = ?'
             ).bind(nextRemindTime.toISOString(), reminderId).run();
-        }
-
-        // 更新提醒状态为已发送
-        await env.DB.prepare(
-            'UPDATE reminders SET status = 1 WHERE id = ?'
-        ).bind(reminderId).run();
-
-        // 如果不是单次提醒，重置状态为0
-        if (reminder.cycle_type !== 'once') {
-            await env.DB.prepare(
-                'UPDATE reminders SET status = 0 WHERE id = ?'
-            ).bind(reminderId).run();
         }
 
         // 只有单次提醒才删除定时任务
