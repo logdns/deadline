@@ -212,6 +212,13 @@ export async function onRequest(context) {
             'UPDATE reminders SET status = 1 WHERE id = ?'
         ).bind(reminderId).run();
 
+        // 如果不是单次提醒，重置状态为0
+        if (reminder.cycle_type !== 'once') {
+            await env.DB.prepare(
+                'UPDATE reminders SET status = 0 WHERE id = ?'
+            ).bind(reminderId).run();
+        }
+
         // 只有单次提醒才删除定时任务
         if (reminder.cycle_type === 'once' && reminder.cron_job_id && env.CRONJOB_API_KEY) {
             try {
