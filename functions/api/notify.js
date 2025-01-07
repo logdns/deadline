@@ -212,11 +212,39 @@ export async function onRequest(context) {
             'UPDATE reminders SET status = 1 WHERE id = ?'
         ).bind(reminderId).run();
 
-        // 如果不是单次提醒，重置状态为0
+        // 如果不是单次提醒，重置状态为0并更新下一次提醒时间
         if (reminder.cycle_type !== 'once') {
+            const currentTime = new Date(reminder.remind_time);
+            let nextRemindTime;
+
+            // 计算下一次提醒时间
+            if (reminder.cycle_type === 'weekly') {
+                nextRemindTime = new Date(currentTime.getTime() + 7 * 24 * 60 * 60 * 1000);
+            } else if (reminder.cycle_type === 'monthly') {
+                // 获取下个月的同一天
+                nextRemindTime = new Date(currentTime);
+                nextRemindTime.setMonth(nextRemindTime.getMonth() + 1);
+                
+                // 处理月底日期问题（比如31号）
+                if (nextRemindTime.getDate() !== currentTime.getDate()) {
+                    nextRemindTime = new Date(nextRemindTime.getFullYear(), nextRemindTime.getMonth(), 0);
+                }
+            } else if (reminder.cycle_type === 'yearly') {
+                nextRemindTime = new Date(currentTime);
+                nextRemindTime.setFullYear(nextRemindTime.getFullYear() + 1);
+                
+                // 处理闰年2月29日问题
+                if (currentTime.getMonth() === 1 && currentTime.getDate() === 29) {
+                    if (!isLeapYear(nextRemindTime.getFullYear())) {
+                        nextRemindTime = new Date(nextRemindTime.getFullYear(), 1, 28);
+                    }
+                }
+            }
+
+            // 更新数据库中的下一次提醒时间和状态
             await env.DB.prepare(
-                'UPDATE reminders SET status = 0 WHERE id = ?'
-            ).bind(reminderId).run();
+                'UPDATE reminders SET status = 0, remind_time = ? WHERE id = ?'
+            ).bind(nextRemindTime.toISOString(), reminderId).run();
         }
 
         // 只有单次提醒才删除定时任务
@@ -254,4 +282,9 @@ export async function onRequest(context) {
             headers: { 'Content-Type': 'application/json' }
         });
     }
+}
+
+// 添加闰年判断函数
+function isLeapYear(year) {
+    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
 } 
