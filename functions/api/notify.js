@@ -122,7 +122,7 @@ export async function onRequest(context) {
                     title: `🔔 提醒：${reminder.title}`,
                     body: `${reminder.content}\n\n⏰ 提醒时间：${displayTime.toLocaleString('zh-CN')}\n\n📅 循环类型：${cycleText}${linkText}`,
                 };
-                const barkURL = `https://txt.2sb.org/${env.BARK_KEY}/${encodeURIComponent(barkMessage.title)}/${encodeURIComponent(barkMessage.body)}`;
+                const barkURL = `https://push.2sb.org/${env.BARK_KEY}/${encodeURIComponent(barkMessage.title)}/${encodeURIComponent(barkMessage.body)}`;
                 const barkResponse = await fetch(barkURL);
                 const barkResult = await barkResponse.json();
                 notificationResults.push({ platform: 'bark', success: barkResponse.ok, result: barkResult });
